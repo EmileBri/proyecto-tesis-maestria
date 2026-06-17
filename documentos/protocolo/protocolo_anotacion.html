@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Standard — Análisis de Sentimiento en Productos Agrícolas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 14px;
+            color: #222;
+            background: #fff;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px;
+        }
+
+        /* ── Portada ── */
+        .doc-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .doc-title h1 {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: #1F3864;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .doc-title .subtitle {
+            font-style: italic;
+            font-size: 1.15em;
+            color: #2E74B5;
+            margin-bottom: 8px;
+        }
+        .doc-title .meta {
+            font-size: 0.88em;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        .doc-title .meta-note {
+            font-size: 0.82em;
+            color: #2E74B5;
+            font-style: italic;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 2px solid #1F3864;
+            margin: 32px 0;
+        }
+
+        /* ── Encabezados de sección principal ── */
+        .section-header {
+            font-size: 1.4em;
+            font-weight: 800;
+            color: #1F3864;
+            margin: 40px 0 16px 0;
+        }
+
+        /* ── Encabezados de subsección ── */
+        .subsection-header {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #2E74B5;
+            margin: 24px 0 10px 0;
+        }
+
+        /* ── Badge ── */
+        .badge {
+            display: inline-block;
+            background: #2E74B5;
+            color: white;
+            font-size: 0.78em;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 3px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .badge-line {
+            margin-bottom: 12px;
+        }
+        .badge-source {
+            font-style: italic;
+            color: #2E74B5;
+            font-size: 0.85em;
+            vertical-align: middle;
+        }
+
+        /* ── Cajas informativas ── */
+        .info-box {
+            background: #EBF3FB;
+            border-left: 4px solid #2E74B5;
+            padding: 14px 16px;
+            margin: 10px 0 16px 0;
+            border-radius: 2px;
+        }
+        .info-box .box-title {
+            font-weight: 700;
+            color: #1F3864;
+            margin-bottom: 6px;
+        }
+        .info-box p, .info-box div {
+            line-height: 1.6;
+        }
+
+        .rule-box {
+            background: #FFF3E0;
+            border-left: 4px solid #E65100;
+            padding: 12px 16px;
+            margin: 10px 0 16px 0;
+            border-radius: 2px;
+        }
+        .rule-box .rule-title {
+            font-weight: 700;
+            color: #E65100;
+            margin-bottom: 6px;
+        }
+        .rule-box p { line-height: 1.6; }
+
+        /* ── Tablas ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 18px 0;
+            font-size: 0.94em;
+        }
+        th {
+            background: #1F3864;
+            color: white;
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 700;
+        }
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+        tr:nth-child(even) td { background: #F5F8FC; }
+
+        /* colores de clase */
+        .pos { color: #1A7A1A; font-weight: 700; }
+        .neu { color: #8B6914; font-weight: 700; }
+        .neg { color: #C0392B; font-weight: 700; }
+
+        /* ── Archivo ── */
+        .file-box {
+            background: #F3F3F3;
+            border: 1px solid #ddd;
+            padding: 12px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.05em;
+            color: #222;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+
+        code {
+            background: #eee;
+            padding: 1px 5px;
+            border-radius: 2px;
+            font-size: 0.92em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 0.78em;
+            margin-top: 24px;
+        }
+
+        @media print {
+            body { padding: 40px; }
+            .section-header { page-break-before: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     PORTADA
+══════════════════════════════════════════════ -->
+<div class="doc-title">
+    <h1>Gold Standard</h1>
+    <div class="subtitle">Construcción de un Gold Standard para evaluación de<br>análisis de sentimiento en reseñas de productos agrícolas</div>
+    <div class="meta">Proyecto de Tesis · Maestría en Ciencia de Datos · UAT · 2026</div>
+    <div class="meta-note">Protocolo de anotación humana para evaluación del pipeline de etiquetado automático por LLMs</div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     1. OBJETIVO
+══════════════════════════════════════════════ -->
+<div class="section-header">1 — Objetivo</div>
+
+<div class="info-box">
+    <div class="box-title">Objetivo general</div>
+    <p>Construir un conjunto de referencia etiquetado manualmente por un experto humano para evaluar la calidad del pipeline de etiquetado automático basado en ensamble de LLMs.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     2. ESQUEMA DE CLASES
+══════════════════════════════════════════════ -->
+<div class="section-header">2 — Esquema de Clases</div>
+
+<div class="subsection-header">2.1 Definición de clases</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Clase</th>
+            <th>Criterio de asignación</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><span class="pos">Positivo</span></td>
+            <td>La reseña expresa satisfacción general con el producto (calidad, resultado, experiencia de compra).</td>
+        </tr>
+        <tr>
+            <td><span class="neu">Neutral</span></td>
+            <td>Opinión mixta, ambigua, o puramente descriptiva sin valoración clara.</td>
+        </tr>
+        <tr>
+            <td><span class="neg">Negativo</span></td>
+            <td>La reseña expresa insatisfacción, defecto, decepción o experiencia mala.</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="subsection-header">2.2 Regla de desempate</div>
+
+<div class="rule-box">
+    <div class="rule-title">Regla — Texto prevalece sobre rating numérico</div>
+    <p>Cuando el rating numérico y el texto contradigan (ej. 4 estrellas pero texto negativo), <strong>el texto prevalece</strong>. El rating es contexto, no criterio de decisión.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     3. ESTRATEGIA DE MUESTREO
+══════════════════════════════════════════════ -->
+<div class="section-header">3 — Estrategia de Muestreo</div>
+
+<div class="badge-line">
+    <span class="badge">Dataset base</span>
+    <span class="badge-source">Amazon Seeds &amp; Grasses · reseñas en inglés · ya etiquetadas por el ensamble de LLMs</span>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Subconjunto</th>
+            <th style="width:60px;">N</th>
+            <th>Criterio de selección</th>
+            <th>Propósito</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Casos difíciles</strong></td>
+            <td>100</td>
+            <td>Registros donde los 3 LLMs no concordaron (concordancia &lt; 1.0)</td>
+            <td>Son los más informativos para detectar errores del pipeline</td>
+        </tr>
+        <tr>
+            <td><strong>Casos fáciles</strong></td>
+            <td>30</td>
+            <td>Concordancia = 1.0 entre los 3 LLMs</td>
+            <td>Medir cuánto coincide el anotador humano con el consenso automático en casos no ambiguos</td>
+        </tr>
+        <tr>
+            <td><strong>Total</strong></td>
+            <td><strong>130</strong></td>
+            <td>—</td>
+            <td>Gold standard completo</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     4. PROCESO DE ANOTACIÓN
+══════════════════════════════════════════════ -->
+<div class="section-header">4 — Proceso de Anotación</div>
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:36px;">#</th>
+            <th style="width:160px;">Elemento</th>
+            <th>Descripción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>Anotador</strong></td>
+            <td>Anotador único principal con asistencia de compañeros.</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>Herramienta</strong></td>
+            <td>CSV con columnas <code>etiqueta_humano</code> y <code>notas_humano</code>.</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>Criterio de lectura</strong></td>
+            <td>Leer únicamente el texto de la reseña. Las etiquetas de los LLMs están visibles como referencia pero <strong>no condicionan la decisión</strong>.</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>Registro de dudas</strong></td>
+            <td>Registrar casos dudosos en <code>notas_humano</code> para posible análisis posterior.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     5. MÉTRICAS DE EVALUACIÓN
+══════════════════════════════════════════════ -->
+<div class="section-header">5 — Métricas de Evaluación</div>
+
+<div class="badge-line">
+    <span class="badge">Aplicadas con el gold standard completo</span>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Métrica</th>
+            <th>Descripción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Acuerdo LLM–Humano</strong></td>
+            <td>Por modelo individual — porcentaje de concordancia entre la etiqueta del LLM y la etiqueta humana.</td>
+        </tr>
+        <tr>
+            <td><strong>Cohen's Kappa</strong></td>
+            <td>Entre ensamble y anotador humano — mide acuerdo corregido por azar.</td>
+        </tr>
+        <tr>
+            <td><strong>F1-Macro</strong></td>
+            <td>Del ensamble usando el gold standard como referencia — métrica balanceada entre clases.</td>
+        </tr>
+        <tr>
+            <td><strong>Análisis de errores</strong></td>
+            <td>Por tipo: falsos positivos, casos neutros mal clasificados, etc.</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     6. ARCHIVO GENERADO
+══════════════════════════════════════════════ -->
+<div class="section-header">6 — Archivo Generado</div>
+
+<div class="file-box">gold_standard_anotacion_humana.csv</div>
+
+<div class="info-box">
+    <div class="box-title">Columnas esperadas</div>
+    <div>
+        <code>review_id</code> &nbsp;·&nbsp;
+        <code>text</code> &nbsp;·&nbsp;
+        <code>rating</code> &nbsp;·&nbsp;
+        <code>label_llm_1</code> &nbsp;·&nbsp;
+        <code>label_llm_2</code> &nbsp;·&nbsp;
+        <code>label_llm_3</code> &nbsp;·&nbsp;
+        <code>label_ensemble</code> &nbsp;·&nbsp;
+        <code>concordancia</code> &nbsp;·&nbsp;
+        <strong><code>etiqueta_humano</code></strong> &nbsp;·&nbsp;
+        <strong><code>notas_humano</code></strong>
+    </div>
+</div>
+
+<hr class="divider">
+<div class="footer">
+    Proyecto de Tesis · Maestría en Ciencia de Datos · UAT · 2026
+</div>
+
+</body>
+</html>

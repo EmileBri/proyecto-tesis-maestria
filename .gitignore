@@ -1,0 +1,46 @@
+# Datos demasiado grandes para LFS gratuito
+datos/originales/full_patio_lawn_garden.7z
+datos/procesados/tesis_dataset_ampliado.csv
+datos/procesados/tesis_dataset.csv
+
+# Archivos de oficina y presentaciones
+*.docx
+*.pptx
+*.pdf
+*.xlsx
+*.xls
+
+# Imágenes
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+
+# Archivos comprimidos
+*.zip
+*.7z
+*.tar.gz
+*.rar
+
+# Logs
+*.log
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+.venv/
+env/
+
+# macOS
+.DS_Store
+
+# Notas internas
+estancia/mini_exposicion_avances.md
+documentos/protocolo/resumen_contexto_agente.md
+materia_topicos/Infra/
